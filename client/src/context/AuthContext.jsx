@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       setLoading(true);
-      const res = await axios.post("/auth/login", { username, password });
+      const res = await axios.post("/api/auth/login", { username, password });
 
       if (res.data.success) {
         setUser(res.data.user);
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setLoading(true);
-      const res = await axios.post("/auth/register", userData);
+      const res = await axios.post("/api/auth/register", userData);
 
       if (res.data.success) {
         setUser(res.data.user);
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (userData) => {
     try {
       setLoading(true);
-      const res = await axios.put(`/auth/update-profile`, userData);
+      const res = await axios.put(`/api/auth/update-profile`, userData);
 
       if (res.data.success) {
         const updatedUser = { ...user, ...res.data.data };
@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }) => {
   const changePassword = async (currentPassword, newPassword) => {
     try {
       setLoading(true);
-      const res = await axios.put("/auth/update-password", {
+      const res = await axios.put("/api/auth/update-password", {
         currentPassword,
         newPassword,
       });
@@ -180,7 +180,7 @@ export const AuthProvider = ({ children }) => {
   const forgotPassword = async (email) => {
     try {
       setLoading(true);
-      const res = await axios.post("/auth/forgot-password", { email });
+      const res = await axios.post("/api/auth/forgot-password", { email });
 
       if (res.data.success) {
         toast.success("Password reset email sent");
@@ -209,7 +209,7 @@ export const AuthProvider = ({ children }) => {
       // console.log("Resetting password with token:", token);
       // console.log("Password length:", password?.length || 0);
 
-      const res = await axios.put(`/auth/reset-password/${token}`, {
+      const res = await axios.put(`/api/auth/reset-password/${token}`, {
         password,
       });
 
