@@ -36,7 +36,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 // Set default axios base URL and headers
 axios.defaults.baseURL =
-  import.meta.env.VITE_API_URL || "http://localhost:3001";
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
