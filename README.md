@@ -4,7 +4,7 @@ Welcome to **InsuraTrack**, a cutting-edge, role-based insurance policy manageme
 
 Designed for seamless interaction between agents and customers, InsuraTrack offers a robust, secure, and user-friendly platform to manage insurance policies with ease.
 
-🔗 **[Live Demo](https://insuratrack.onrender.com/)**
+
 
 ---
 
@@ -79,76 +79,83 @@ Follow these steps to set up and run **InsuraTrack** locally on your machine.
 ```bash
 git clone https://github.com/your-username/insuratrack.git
 cd insuratrack
-2. Install Server Dependencies
-bash
-Copy
-Edit
+```
+
+### 2. Install Server Dependencies
+
+```bash
 cd server
 npm install
-3. Install Client Dependencies
-bash
-Copy
-Edit
+```
+
+### 3. Install Client Dependencies
+
+```bash
 cd ../client
 npm install
-4. Configure Environment Variables
-Create a .env file inside the server/ directory:
+```
 
-env
-Copy
-Edit
+### 4. Configure Environment Variables
+
+Create a `.env` file inside the `server/` directory:
+
+```env
 MONGO_URI=your_mongodb_connection_string
 EMAIL_USERNAME=your_email_username
 EMAIL_PASSWORD=your_email_password
 JWT_SECRET=your_jwt_secret_key
+```
+
 🛡️ Replace values accordingly with your credentials and secure secrets.
 
-▶️ Running the Application
-Start Backend Server
-bash
-Copy
-Edit
+---
+
+## ▶️ Running the Application
+
+### Start Backend Server
+
+```bash
 cd server
 npm run dev
-Server runs at: http://localhost:5000
+```
 
-Start Frontend Server
-bash
-Copy
-Edit
+> Server runs at: `http://localhost:5000`
+
+### Start Frontend Server
+
+```bash
 cd ../client
 npm run dev
-Frontend runs at: http://localhost:5173
+```
 
-🧑‍💼 User Roles & Workflows
-🔹 Agent Workflow
-Register & login securely
+> Frontend runs at: `http://localhost:3001`
 
-Manage customer records
+---
 
-Create, assign, and update policies
+## 🧑‍💼 User Roles & Workflows
 
-Track renewals & respond to requests
+### 🔹 Agent Workflow
 
-Filter data by month for insights
+- Register & login securely  
+- Manage customer records  
+- Create, assign, and update policies  
+- Track renewals & respond to requests  
+- Filter data by month for insights  
+- Message customers from dashboard  
 
-Message customers from dashboard
+### 🔸 Customer Workflow
 
-🔸 Customer Workflow
-Login with agent-provided credentials
+- Login with agent-provided credentials  
+- Update password securely  
+- Track assigned policies  
+- Submit renewal requests  
+- Chat with agents via messaging system  
 
-Update password securely
+---
 
-Track assigned policies
+## 📂 Project Structure
 
-Submit renewal requests
-
-Chat with agents via messaging system
-
-📂 Project Structure
-pgsql
-Copy
-Edit
+```bash
 insuratrack/
 ├── client/                # Frontend (React)
 │   ├── public/
@@ -179,30 +186,39 @@ insuratrack/
 │   └── server.js
 ├── .gitignore
 └── README.md
-🤝 Contributing
+```
+
+---
+
+## 🤝 Contributing
+
 We welcome your contributions to make InsuraTrack better!
 
-Fork the repository
+1. Fork the repository  
+2. Create a new branch:
 
-Create a new branch:
-
-bash
-Copy
-Edit
+```bash
 git checkout -b feature/your-feature-name
-Make changes and commit:
+```
 
-bash
-Copy
-Edit
+3. Make changes and commit:
+
+```bash
 git commit -m "Add your feature"
-Push and open a PR:
+```
 
-bash
-Copy
-Edit
+4. Push and open a PR:
+
+```bash
 git push origin feature/your-feature-name
-📜 License
+```
+
+---
+
+## 📜 License
+
 Licensed under the MIT License. See the LICENSE file for more info.
 
-🌟 InsuraTrack – Simplifying insurance management, one policy at a time! 🌟
+---
+
+🌟 **InsuraTrack – Simplifying insurance management, one policy at a time!** 🌟
