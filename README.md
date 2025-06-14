@@ -5,6 +5,8 @@ Welcome to **InsuraTrack**, a cutting-edge, role-based insurance policy manageme
 Designed for seamless interaction between agents and customers, InsuraTrack offers a robust, secure, and user-friendly platform to manage insurance policies with ease.
 
 🔗 *[Live Demo](https://insuratrack.onrender.com/)*
+⏳ Please wait up to 1 minute during initial login.
+Our server may take a moment to wake up after inactivity. Thanks for your patience!
 
 ---
 
