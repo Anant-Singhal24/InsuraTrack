@@ -28,6 +28,13 @@ const sendEmail = async (options) => {
       message: options.message,
       reset_url: options.resetUrl || "",
       reset_link: options.resetUrl || "",
+      resetUrl: options.resetUrl || "",
+      resetLink: options.resetUrl || "",
+      link: options.resetUrl || "",
+      url: options.resetUrl || "",
+      action_url: options.resetUrl || "",
+      password_reset_link: options.resetUrl || "",
+      reset_password_link: options.resetUrl || "",
     },
   };
 
