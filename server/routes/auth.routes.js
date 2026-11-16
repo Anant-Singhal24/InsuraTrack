@@ -1,5 +1,6 @@
 const express = require("express");
 const { check } = require("express-validator");
+const rateLimit = require("express-rate-limit");
 const {
   register,
   login,
@@ -13,9 +14,27 @@ const { protect } = require("../middleware/auth");
 
 const router = express.Router();
 
+// Rate limiters
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,                   // max 10 requests per window
+  message: { success: false, message: "Too many attempts, please try again after 15 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,                    // max 5 requests per window
+  message: { success: false, message: "Too many password reset requests, please try again after 1 hour." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Register user
 router.post(
   "/register",
+  authLimiter,
   [
     check("username", "Username is required").not().isEmpty(),
     check("name", "Name is required").not().isEmpty(),
@@ -30,6 +49,7 @@ router.post(
 // Login user
 router.post(
   "/login",
+  authLimiter,
   [
     check("username", "Username is required").not().isEmpty(),
     check("password", "Password is required").not().isEmpty(),
@@ -63,7 +83,7 @@ router.put(
 router.put("/update-profile", protect, updateProfile);
 
 // Forgot password
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 
 // Reset password
 router.put(
