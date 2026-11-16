@@ -353,6 +353,17 @@ const AgentCustomers = () => {
         return;
       }
 
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
+
+      if (password.length < 6) {
+        toast.error("Password must be at least 6 characters");
+        return;
+      }
+
       // Send request to create customer
       const response = await axios.post("/api/customers", {
         name,
@@ -385,7 +396,9 @@ const AgentCustomers = () => {
     } catch (error) {
       console.error("Error creating customer:", error);
       const errorMessage =
-        error.response?.data?.message || "Failed to create customer";
+        error.response?.data?.message ||
+        (error.response?.data?.errors && error.response?.data?.errors[0]?.msg) ||
+        "Failed to create customer";
       toast.error(errorMessage);
     }
   };
@@ -1460,6 +1473,8 @@ const AgentCustomers = () => {
                 value={newCustomer.password}
                 onChange={handleCustomerInputChange}
                 required
+                minLength={6}
+                placeholder="At least 6 characters"
               />
               <button
                 type="button"
@@ -1470,9 +1485,15 @@ const AgentCustomers = () => {
                 Generate
               </button>
             </div>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Customer will be able to change their password after first login.
-            </p>
+            {newCustomer.password && newCustomer.password.length < 6 ? (
+              <p className="mt-1 text-sm text-red-500 font-medium">
+                Password must be at least 6 characters ({newCustomer.password.length}/6)
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                Minimum 6 characters. Customer will be able to change their password after first login.
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200 mt-6">

@@ -19,26 +19,49 @@ exports.createCustomer = async (req, res) => {
       });
     }
 
+    // Validate email format
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim();
+
     // Check if user with same email or username already exists
     const existingUser = await User.findOne({
-      $or: [{ email }, { username }],
+      $or: [{ email: cleanEmail }, { username: cleanUsername }],
     });
 
     if (existingUser) {
+      const isEmail = existingUser.email?.toLowerCase() === cleanEmail;
       return res.status(400).json({
         success: false,
-        message: "User with this email or username already exists",
+        message: isEmail
+          ? "User with this email already exists"
+          : "User with this username already exists",
       });
     }
 
     // Create a new user
     const user = await User.create({
-      name,
-      email,
-      username,
+      name: name.trim(),
+      email: cleanEmail,
+      username: cleanUsername,
       password, // Password will be hashed in the User model's pre-save middleware
       role: "customer",
-      phone,
+      phone: phone ? phone.trim() : "",
     });
 
     // Create a new customer profile
@@ -76,9 +99,29 @@ exports.createCustomer = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error creating customer:", error);
+
+    // Handle Mongoose validation errors
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((err) => err.message);
+      return res.status(400).json({
+        success: false,
+        message: messages.join(", ") || "Validation error",
+      });
+    }
+
+    // Handle Mongo duplicate key error
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern || {})[0] || "field";
+      return res.status(400).json({
+        success: false,
+        message: `User with this ${field} already exists`,
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message || "Server error",
       error: error.message,
     });
   }
