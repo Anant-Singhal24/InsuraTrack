@@ -91,18 +91,30 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.log("Registration error:", error.response?.data);
-      if (error.response?.data?.message.includes("Username already exists")) {
+      const serverMessage =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.response?.data?.error ||
+        "";
+
+      if (serverMessage.includes("Username already exists")) {
         toast.error("Username already exists");
-      } else if (
-        error.response?.data?.message.includes("Email already in use")
-      ) {
+      } else if (serverMessage.includes("Email already in use")) {
         toast.error("Email already in use by another account");
       } else if (
-        error.response?.data?.message.includes("Password must be at least")
+        serverMessage.includes("Password must be at least") ||
+        serverMessage.toLowerCase().includes("password must be at least")
       ) {
         toast.error("Password must be at least 6 characters");
+      } else if (
+        serverMessage.toLowerCase().includes("valid email") ||
+        serverMessage.toLowerCase().includes("email")
+      ) {
+        toast.error("Please enter a valid email address");
+      } else if (serverMessage && serverMessage !== "Server error") {
+        toast.error(serverMessage);
       } else {
-        toast.error(error.response?.data?.message || "Registration failed");
+        toast.error("Registration failed. Please check your details and try again.");
       }
     } finally {
       setLoading(false);

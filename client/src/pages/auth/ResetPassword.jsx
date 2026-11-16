@@ -10,6 +10,7 @@ const ResetPassword = () => {
     confirmPassword: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const { token } = useParams();
   const { resetPassword, loading } = useContext(AuthContext);
 
@@ -17,21 +18,27 @@ const ResetPassword = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (e.target.name === "password" || e.target.name === "confirmPassword") {
+    if (e.target.name === "password") {
       setPasswordError("");
+    }
+    if (e.target.name === "confirmPassword") {
+      setConfirmPasswordError("");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return;
-    }
+    setPasswordError("");
+    setConfirmPasswordError("");
 
     if (password.length < 6) {
       setPasswordError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match");
       return;
     }
 
@@ -55,7 +62,11 @@ const ResetPassword = () => {
             required
             value={password}
             onChange={handleChange}
+            className={passwordError ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}
           />
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+          )}
         </div>
 
         <div>
@@ -69,10 +80,10 @@ const ResetPassword = () => {
             required
             value={confirmPassword}
             onChange={handleChange}
-            className={passwordError ? "border-red-500" : ""}
+            className={confirmPasswordError ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}
           />
-          {passwordError && (
-            <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+          {confirmPasswordError && (
+            <p className="mt-1 text-sm text-red-600">{confirmPasswordError}</p>
           )}
         </div>
 

@@ -12,7 +12,11 @@ exports.register = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({
+        success: false,
+        message: errors.array()[0].msg,
+        errors: errors.array(),
+      });
     }
 
     const { username, name, email, password, role } = req.body;
@@ -53,6 +57,17 @@ exports.register = async (req, res) => {
 
     sendTokenResponse(user, 201, res);
   } catch (error) {
+    // Handle Mongoose validation errors (e.g. invalid email format)
+    if (error.name === "ValidationError") {
+      const firstError = Object.values(error.errors)[0]?.message || "Validation failed";
+      return res.status(400).json({
+        success: false,
+        message: firstError.includes("valid email")
+          ? "Please enter a valid email address"
+          : firstError,
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: "Server error",

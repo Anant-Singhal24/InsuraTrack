@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import PasswordInputWithEye from "../../components/ui/PasswordInputWithEye";
@@ -15,21 +16,45 @@ const Register = () => {
   });
   const { register, loading } = useContext(AuthContext);
   const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
   const { username, name, email, password, confirmPassword } = formData;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (e.target.name === "password" || e.target.name === "confirmPassword") {
+    if (e.target.name === "password") {
       setPasswordError("");
+    }
+    if (e.target.name === "confirmPassword") {
+      setConfirmPasswordError("");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Reset error states
+    setPasswordError("");
+    setConfirmPasswordError("");
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setPasswordError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    // Validate password confirmation
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setConfirmPasswordError("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -108,7 +133,13 @@ const Register = () => {
             required
             value={password}
             onChange={handleChange}
+            className={passwordError ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}
           />
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              {passwordError}
+            </p>
+          )}
         </div>
 
         <div>
@@ -125,11 +156,11 @@ const Register = () => {
             required
             value={confirmPassword}
             onChange={handleChange}
-            className={passwordError ? "border-red-500" : ""}
+            className={confirmPasswordError ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""}
           />
-          {passwordError && (
+          {confirmPasswordError && (
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-              {passwordError}
+              {confirmPasswordError}
             </p>
           )}
         </div>
