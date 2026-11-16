@@ -211,19 +211,32 @@ exports.updatePassword = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    // console.log("Forgot password request for email:", email);
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      // console.log("No user found with that email");
-      return res.status(404).json({
+    if (!email || !email.trim()) {
+      return res.status(400).json({
         success: false,
-        message: "No user with that email",
+        message: "Please provide an email address",
       });
     }
 
-    // console.log("User found for password reset:", user._id);
-    // console.log("Username:", user.username);
+    const cleanEmail = email.trim();
+
+    // Find user by case-insensitive email match
+    const user = await User.findOne({
+      email: {
+        $regex: new RegExp(
+          `^${cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+          "i"
+        ),
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with that email",
+      });
+    }
 
     // Get reset token
     const resetToken = crypto.randomBytes(20).toString("hex");
@@ -238,7 +251,6 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     await user.save();
-    // console.log("Reset token saved for user:", user._id);
 
     // Create reset url
     const resetUrl = `${
@@ -275,17 +287,18 @@ exports.forgotPassword = async (req, res) => {
 
       return res.status(500).json({
         success: false,
-        message: "Email could not be sent. Please try again later.",
-        error:
-          process.env.NODE_ENV !== "production" ? error.message : undefined,
+        message:
+          error.message ||
+          "Email could not be sent. Please check your email configuration.",
+        error: error.message,
       });
     }
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error",
-      error: process.env.NODE_ENV !== "production" ? error.message : undefined,
+      message: error.message || "Server error",
+      error: error.message,
     });
   }
 };

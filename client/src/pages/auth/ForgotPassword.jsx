@@ -14,7 +14,9 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const success = await forgotPassword(email);
+    const cleanEmail = email.trim();
+    if (!cleanEmail) return;
+    const success = await forgotPassword(cleanEmail);
     if (success) {
       setIsSubmitted(true);
     }
