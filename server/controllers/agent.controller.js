@@ -184,7 +184,10 @@ exports.linkSelfToCustomer = async (req, res) => {
     }
 
     // Check if already linked
-    if (agent.linkedCustomerIDs.includes(customer._id)) {
+    const isAlreadyLinked = agent.linkedCustomerIDs.some(
+      (id) => id.toString() === customer._id.toString()
+    );
+    if (isAlreadyLinked) {
       return res.status(400).json({
         success: false,
         message: "You are already linked to this customer",
@@ -247,7 +250,10 @@ exports.deleteCustomer = async (req, res) => {
     }
 
     // Check if agent is linked to this customer
-    if (!agent.linkedCustomerIDs.includes(customer._id)) {
+    const isLinked = agent.linkedCustomerIDs.some(
+      (id) => id.toString() === customer._id.toString()
+    );
+    if (!isLinked) {
       return res.status(403).json({
         success: false,
         message: "You are not authorized to delete this customer",
@@ -348,7 +354,10 @@ exports.searchCustomers = async (req, res) => {
       const agent = await Agent.findOne({ userID: req.user.id });
       if (agent) {
         filteredCustomers = customers.filter(
-          (customer) => !agent.linkedCustomerIDs.includes(customer._id)
+          (customer) =>
+            !agent.linkedCustomerIDs.some(
+              (id) => id.toString() === customer._id.toString()
+            )
         );
       }
     }

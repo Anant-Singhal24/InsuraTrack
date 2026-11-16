@@ -113,7 +113,12 @@ exports.getCustomer = async (req, res) => {
     // Check if agent is authorized to access this customer
     if (req.user.role === "agent") {
       const agent = await Agent.findOne({ userID: req.user.id });
-      if (!agent || !agent.linkedCustomerIDs.includes(customer._id)) {
+      const isLinked =
+        agent &&
+        agent.linkedCustomerIDs.some(
+          (id) => id.toString() === customer._id.toString()
+        );
+      if (!isLinked) {
         return res.status(403).json({
           success: false,
           message: "Not authorized to access this customer",
@@ -200,7 +205,12 @@ exports.getCustomerPolicies = async (req, res) => {
 
     if (req.user.role === "agent") {
       const agent = await Agent.findOne({ userID: req.user.id });
-      if (!agent || !agent.linkedCustomerIDs.includes(customer._id)) {
+      const isLinked =
+        agent &&
+        agent.linkedCustomerIDs.some(
+          (id) => id.toString() === customer._id.toString()
+        );
+      if (!isLinked) {
         return res.status(403).json({
           success: false,
           message: "Not authorized to access these policies",
@@ -247,7 +257,12 @@ exports.updateCustomer = async (req, res) => {
     // Check if agent is authorized to update this customer
     if (req.user.role === "agent") {
       const agent = await Agent.findOne({ userID: req.user.id });
-      if (!agent || !agent.linkedCustomerIDs.includes(customer._id)) {
+      const isLinked =
+        agent &&
+        agent.linkedCustomerIDs.some(
+          (id) => id.toString() === customer._id.toString()
+        );
+      if (!isLinked) {
         return res.status(403).json({
           success: false,
           message: "Not authorized to update this customer",
