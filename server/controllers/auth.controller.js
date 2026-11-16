@@ -267,8 +267,10 @@ exports.forgotPassword = async (req, res) => {
     try {
       await sendEmail({
         email: user.email,
+        name: user.name,
         subject: "InsuraTrack Password Reset",
         message,
+        resetUrl,
       });
 
       res.status(200).json({
