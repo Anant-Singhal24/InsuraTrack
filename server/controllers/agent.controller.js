@@ -2,6 +2,8 @@ const Agent = require("../models/Agent");
 const User = require("../models/User");
 const Customer = require("../models/Customer");
 const Policy = require("../models/Policy");
+const Message = require("../models/Message");
+const PolicyHistory = require("../models/PolicyHistory");
 
 // @desc    Get agent profile for current agent user
 // @route   GET /api/agents/me
@@ -283,21 +285,29 @@ exports.deleteCustomer = async (req, res) => {
       });
     }
 
-    // Begin deletion process
+    // Begin cascade deletion process
     // 1. Delete all inactive policies
     await Policy.deleteMany({ customerID: customer._id });
 
-    // 2. Remove customer from agent's linked customers
-    agent.linkedCustomerIDs = agent.linkedCustomerIDs.filter(
-      (id) => id.toString() !== customer._id.toString()
-    );
-    await agent.save();
+    // 2. Cascade delete all historical policy records for this customer
+    await PolicyHistory.deleteMany({ customerID: customer._id });
 
-    // 3. Delete the customer record
+    // 3. Cascade delete all messages involving this customer
+    await Message.deleteMany({ customerId: customer._id });
+
+    // 4. Remove customer from all linked agents
+    await Agent.updateMany(
+      { linkedCustomerIDs: customer._id },
+      { $pull: { linkedCustomerIDs: customer._id } }
+    );
+
+    // 5. Delete the customer record
     await Customer.findByIdAndDelete(customer._id);
 
-    // 4. Delete the user account
-    await User.findByIdAndDelete(customerUser._id);
+    // 6. Delete the user account
+    if (customerUser) {
+      await User.findByIdAndDelete(customerUser._id);
+    }
 
     res.status(200).json({
       success: true,
