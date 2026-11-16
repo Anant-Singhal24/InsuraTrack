@@ -91,37 +91,37 @@ exports.login = async (req, res) => {
       });
     }
 
-    const { username, password } = req.body;
-    // console.log("Login attempt for username:", username);
+    const { username, email, password } = req.body;
+    const identifier = (username || email || "").trim();
 
-    // Check for user
-    const user = await User.findOne({ username }).select("+password");
+    if (!identifier) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter your username or email",
+      });
+    }
+
+    // Search user by username OR email (case-insensitive)
+    const escapedIdentifier = identifier.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
+    const user = await User.findOne({
+      $or: [
+        { username: { $regex: new RegExp(`^${escapedIdentifier}$`, "i") } },
+        { email: { $regex: new RegExp(`^${escapedIdentifier}$`, "i") } },
+      ],
+    }).select("+password");
+
     if (!user) {
-      // console.log("No user found with username:", username);
       return res.status(401).json({
         success: false,
         message: "Invalid credentials",
       });
     }
 
-    // console.log("User found, ID:", user._id, "Username:", user.username);
-
-    // Find by ID to verify we have the right user
-    // console.log("Checking for consistency in user ID lookup");
-    const userById = await User.findById(user._id).select("+password");
-    if (!userById) {
-      // console.log("Warning: Could not find user by ID. This is unexpected.");
-    } else {
-      // console.log("Found by ID:", userById._id, "Username:", userById.username);
-    }
-
     // Check if password matches
-    // console.log(
-    //   "Password hash in DB:",
-    //   user.password ? user.password.substring(0, 10) + "..." : "Not available"
-    // );
-    const isMatch = await user.matchPassword(password); // using this defined in User model
-    // console.log("Password match result:", isMatch);
+    const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       return res.status(401).json({
@@ -130,7 +130,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // console.log("Login successful for user:", user._id);
     sendTokenResponse(user, 200, res);
   } catch (error) {
     console.error("Login error:", error);

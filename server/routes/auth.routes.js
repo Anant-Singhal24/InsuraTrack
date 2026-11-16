@@ -51,7 +51,9 @@ router.post(
   "/login",
   authLimiter,
   [
-    check("username", "Username is required").not().isEmpty(),
+    check("username", "Username or email is required").custom(
+      (value, { req }) => Boolean(req.body.username || req.body.email)
+    ),
     check("password", "Password is required").not().isEmpty(),
     check("password", "Password must be at least 6 characters").isLength({
       min: 6,

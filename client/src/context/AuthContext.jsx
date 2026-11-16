@@ -56,9 +56,10 @@ export const AuthProvider = ({ children }) => {
       ) {
         toast.error("Password must be at least 6 characters");
       } else if (
-        error.response?.data?.message.includes("Username is required")
+        error.response?.data?.message?.toLowerCase().includes("username") ||
+        error.response?.data?.message?.toLowerCase().includes("email")
       ) {
-        toast.error("Username is required");
+        toast.error("Username or email is required");
       } else {
         toast.error(error.response?.data?.message || "Login failed");
       }

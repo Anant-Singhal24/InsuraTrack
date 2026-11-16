@@ -30,13 +30,14 @@ const Login = () => {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username" className="form-label dark:text-gray-300">
-            Username
+            Username or Email
           </label>
           <input
             id="username"
             name="username"
             type="text"
-            autoComplete="username"
+            autoComplete="username email"
+            placeholder="Enter your username or email"
             required
             value={username}
             onChange={handleChange}
