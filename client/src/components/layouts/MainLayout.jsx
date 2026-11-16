@@ -51,6 +51,34 @@ const MainLayout = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  // Determine page title based on current route
+  const getPageTitle = () => {
+    const routeTitles = {
+      "/agent/dashboard": "Dashboard",
+      "/agent/customers": "Customers",
+      "/agent/policies": "Policies",
+      "/agent/policies/history": "Historical Policies",
+      "/agent/messages": "Messages",
+      "/agent/profile": "Profile",
+      "/customer/dashboard": "Dashboard",
+      "/customer/policies": "My Policies",
+      "/customer/contact-agent": "Contact Agent",
+      "/customer/profile": "My Profile",
+      "/change-password": "Change Password",
+    };
+
+    if (routeTitles[location.pathname]) {
+      return routeTitles[location.pathname];
+    }
+
+    const matchedNav = navigation.find(
+      (item) =>
+        item.href === location.pathname ||
+        (item.href !== "/" && location.pathname.startsWith(`${item.href}/`))
+    );
+    return matchedNav?.name || "Dashboard";
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900" : "bg-gray-50"}`}>
       {/* Navigation */}
@@ -182,8 +210,7 @@ const MainLayout = () => {
               darkMode ? "text-white" : "text-gray-900"
             }`}
           >
-            {navigation.find((item) => item.href === location.pathname)?.name ||
-              "Dashboard"}
+            {getPageTitle()}
           </h1>
         </div>
       </header>

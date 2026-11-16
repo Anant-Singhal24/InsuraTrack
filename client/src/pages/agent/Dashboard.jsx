@@ -77,11 +77,10 @@ const AgentDashboard = () => {
         // Format recent customers (limited to 5)
         const formattedCustomers = customers.slice(0, 5).map((customer) => {
           const userData = customer.userID || {};
-          const customerPolicies = policies.filter(
-            (policy) =>
-              policy.customerID === customer._id ||
-              policy.customerID._id === customer._id
-          );
+          const customerPolicies = policies.filter((policy) => {
+            const pCustId = policy.customerID?._id || policy.customerID;
+            return pCustId?.toString() === customer._id?.toString();
+          });
 
           const totalPremium = customerPolicies.reduce(
             (sum, policy) => sum + (policy.premium || 0),
@@ -110,16 +109,14 @@ const AgentDashboard = () => {
           .sort((a, b) => new Date(a.renewalDate) - new Date(b.renewalDate))
           .slice(0, 5)
           .map((policy) => {
+            const pCustId = policy.customerID?._id || policy.customerID;
             const customer = customers.find(
-              (c) =>
-                c._id === policy.customerID ||
-                (policy.customerID && c._id === policy.customerID._id)
+              (c) => c._id?.toString() === pCustId?.toString()
             );
-            const customerName = customer
-              ? customer.userID
-                ? customer.userID.name
-                : "Unknown"
-              : "Unknown";
+            const customerName =
+              customer?.userID?.name ||
+              policy.customerID?.userID?.name ||
+              "Unknown";
 
             const renewalDate = new Date(policy.renewalDate);
             const daysLeft = Math.ceil(
@@ -128,7 +125,7 @@ const AgentDashboard = () => {
 
             return {
               id: policy._id,
-              policyNumber: `POL-${policy._id.substring(0, 8)}`,
+              policyNumber: policy.policyNumber || `POL-${policy._id.substring(0, 8)}`,
               title: policy.title,
               customerName,
               premium: policy.premium,
