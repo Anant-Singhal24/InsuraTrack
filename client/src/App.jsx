@@ -81,30 +81,35 @@ function App() {
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
+              {/* Agent Routes - Restricted to agents */}
+              <Route element={<ProtectedRoute allowedRoles={["agent"]} />}>
+                <Route path="/agent/dashboard" element={<AgentDashboard />} />
+                <Route path="/agent/customers" element={<AgentCustomers />} />
+                <Route path="/agent/policies" element={<AgentPolicies />} />
+                <Route
+                  path="/agent/policies/history"
+                  element={<HistoricalPolicies />}
+                />
+                <Route path="/agent/messages" element={<AgentMessages />} />
+                <Route path="/agent/profile" element={<AgentProfile />} />
+              </Route>
 
-
-              {/* Agent Routes */}
-              <Route path="/agent/dashboard" element={<AgentDashboard />} />
-              <Route path="/agent/customers" element={<AgentCustomers />} />
-              <Route path="/agent/policies" element={<AgentPolicies />} />
-              <Route
-                path="/agent/policies/history"
-                element={<HistoricalPolicies />}
-              />
-              <Route path="/agent/messages" element={<AgentMessages />} />
-              <Route path="/agent/profile" element={<AgentProfile />} />
-
-              {/* Customer Routes */}
-              <Route
-                path="/customer/dashboard"
-                element={<CustomerDashboard />}
-              />
-              <Route path="/customer/policies" element={<CustomerPolicies />} />
-              <Route
-                path="/customer/contact-agent"
-                element={<ContactAgent />}
-              />
-              <Route path="/customer/profile" element={<CustomerProfile />} />
+              {/* Customer Routes - Restricted to customers */}
+              <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+                <Route
+                  path="/customer/dashboard"
+                  element={<CustomerDashboard />}
+                />
+                <Route
+                  path="/customer/policies"
+                  element={<CustomerPolicies />}
+                />
+                <Route
+                  path="/customer/contact-agent"
+                  element={<ContactAgent />}
+                />
+                <Route path="/customer/profile" element={<CustomerProfile />} />
+              </Route>
 
               {/* Common Routes */}
               <Route path="/change-password" element={<ChangePassword />} />
