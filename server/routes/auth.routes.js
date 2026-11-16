@@ -17,16 +17,22 @@ const router = express.Router();
 // Rate limiters
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,                   // max 10 requests per window
-  message: { success: false, message: "Too many attempts, please try again after 15 minutes." },
+  max: process.env.NODE_ENV === "production" ? 20 : 100, // 20 in prod, 100 in dev
+  message: {
+    success: false,
+    message: "Too many attempts, please try again after 15 minutes.",
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 const forgotPasswordLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,                    // max 5 requests per window
-  message: { success: false, message: "Too many password reset requests, please try again after 1 hour." },
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: process.env.NODE_ENV === "production" ? 15 : 100, // 15 in prod, 100 in dev
+  message: {
+    success: false,
+    message: "Too many password reset requests, please try again after 15 minutes.",
+  },
   standardHeaders: true,
   legacyHeaders: false,
 });
