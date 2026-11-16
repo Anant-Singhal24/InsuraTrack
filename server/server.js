@@ -1,4 +1,11 @@
 require("dotenv").config();
+
+// Critical env var guard — fail fast before anything else loads
+if (!process.env.JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is not set. Exiting.");
+  process.exit(1);
+}
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");

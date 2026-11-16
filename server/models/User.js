@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Please provide an email"],
+    unique: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please provide a valid email",
@@ -100,7 +101,7 @@ UserSchema.methods.getSignedJwtToken = function () {
   //essential for user authentication
   return jwt.sign(
     { id: this._id, role: this.role },
-    process.env.JWT_SECRET || "insuratrack_default_secret_key",
+    process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRE || "30d" }
   );
 };
